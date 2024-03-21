@@ -29,7 +29,7 @@ class Settings(BaseSettings):
     """
 
     host: str = "127.0.0.1"
-    port: int = 8000
+    port: int = 8080
     # quantity of workers for uvicorn
     workers_count: int = 1
     # Enable uvicorn reloading
@@ -42,8 +42,8 @@ class Settings(BaseSettings):
     # Variables for the database
     db_host: str = "localhost"
     db_port: int = 5432
-    db_user: str = "service_feature_flag"
-    db_pass: str = "service_feature_flag"
+    db_user: str = "postgres"
+    db_pass: str = "0305"
     db_base: str = "service_feature_flag"
     db_echo: bool = False
 
