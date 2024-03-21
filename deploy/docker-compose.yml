@@ -1,0 +1,81 @@
+version: '3.9'
+
+services:
+  api: &main_app
+    build:
+      context: .
+      dockerfile: ./deploy/Dockerfile
+      target: prod
+    image: service_feature_flag:${SERVICE_FEATURE_FLAG_VERSION:-latest}
+    restart: always
+    env_file:
+    - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SERVICE_FEATURE_FLAG_HOST: 0.0.0.0
+      SERVICE_FEATURE_FLAG_DB_HOST: service_feature_flag-db
+      SERVICE_FEATURE_FLAG_DB_PORT: 5432
+      SERVICE_FEATURE_FLAG_DB_USER: service_feature_flag
+      SERVICE_FEATURE_FLAG_DB_PASS: service_feature_flag
+      SERVICE_FEATURE_FLAG_DB_BASE: service_feature_flag
+      SERVICE_FEATURE_FLAG_REDIS_HOST: service_feature_flag-redis
+
+  taskiq-worker:
+    <<: *main_app
+    labels: []
+    command:
+    - taskiq
+    - worker
+    - service_feature_flag.tkq:broker
+
+  db:
+    image: postgres:13.8-bullseye
+    hostname: service_feature_flag-db
+    environment:
+      POSTGRES_PASSWORD: "service_feature_flag"
+      POSTGRES_USER: "service_feature_flag"
+      POSTGRES_DB: "service_feature_flag"
+    volumes:
+    - service_feature_flag-db-data:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: pg_isready -U service_feature_flag
+      interval: 2s
+      timeout: 3s
+      retries: 40
+
+  migrator:
+    image: service_feature_flag:${SERVICE_FEATURE_FLAG_VERSION:-latest}
+    restart: "no"
+    command: alembic upgrade head
+    environment:
+      SERVICE_FEATURE_FLAG_DB_HOST: service_feature_flag-db
+      SERVICE_FEATURE_FLAG_DB_PORT: 5432
+      SERVICE_FEATURE_FLAG_DB_USER: service_feature_flag
+      SERVICE_FEATURE_FLAG_DB_PASS: service_feature_flag
+      SERVICE_FEATURE_FLAG_DB_BASE: service_feature_flag
+    depends_on:
+      db:
+        condition: service_healthy
+
+  redis:
+    image: bitnami/redis:6.2.5
+    hostname: "service_feature_flag-redis"
+    restart: always
+    environment:
+      ALLOW_EMPTY_PASSWORD: "yes"
+    healthcheck:
+      test: redis-cli ping
+      interval: 1s
+      timeout: 3s
+      retries: 50
+
+
+
+volumes:
+  service_feature_flag-db-data:
+    name: service_feature_flag-db-data
