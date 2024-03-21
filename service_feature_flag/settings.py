@@ -91,7 +91,6 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(
         env_file=".env",
-        env_prefix="SERVICE_FEATURE_FLAG_",
         env_file_encoding="utf-8",
     )
 
