@@ -1,6 +1,4 @@
-import uuid as uuid_pkg
-
-from sqlalchemy import UUID, Boolean, String, func
+from sqlalchemy import Boolean, String
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import expression
 
@@ -12,11 +10,6 @@ class FlagConditionModel(Base):
 
     __tablename__ = "flag_condition_model"
 
-    id: Mapped[uuid_pkg.UUID] = mapped_column(
-        UUID(as_uuid=True),
-        server_default=func.gen_random_uuid(),
-        nullable=False,
-    )
     cond_key: Mapped[str] = mapped_column(
         String(),
         nullable=False,

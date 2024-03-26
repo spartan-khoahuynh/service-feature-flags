@@ -11,11 +11,6 @@ class FlagConditionTargetModel(Base):
 
     __tablename__ = "flag_condition_target_model"
 
-    id: Mapped[uuid_pkg.UUID] = mapped_column(
-        UUID(as_uuid=True),
-        server_default=func.gen_random_uuid(),
-        nullable=False,
-    )
     conditions: Mapped[JSON] = mapped_column(
         JSON,
         nullable=False,

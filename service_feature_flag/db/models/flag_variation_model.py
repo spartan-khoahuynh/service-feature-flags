@@ -11,11 +11,6 @@ class FlagVariationModel(Base):
 
     __tablename__ = "flag_variation_model"
 
-    id: Mapped[uuid_pkg.UUID] = mapped_column(
-        UUID(as_uuid=True),
-        server_default=func.gen_random_uuid(),
-        nullable=False,
-    )
     flag_id: Mapped[uuid_pkg.UUID] = mapped_column(
         UUID(as_uuid=True),
         server_default=func.gen_random_uuid(),
