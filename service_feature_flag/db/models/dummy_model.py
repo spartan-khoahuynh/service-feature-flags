@@ -9,4 +9,4 @@ class DummyModel(Base):
 
     __tablename__ = "dummy_model"
 
-    name: Mapped[str] = mapped_column(String(length=200))  # noqa: WPS432
+    name: Mapped[str] = mapped_column(String())  # noqa: WPS432
